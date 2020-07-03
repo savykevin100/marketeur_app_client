@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share_file/flutter_share_file.dart';
 import 'package:marketeur_follow_me/composants/calcul.dart';
+import 'package:marketeur_follow_me/modeles/firestore_service.dart';
 import 'package:marketeur_follow_me/modeles/hexadecimal.dart';
 import 'package:marketeur_follow_me/modeles/produit.dart';
 import 'package:marketeur_follow_me/modeles/produits_favoris_user.dart';
@@ -24,7 +25,29 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
     String id_produit;/// Cette variable permet de contenir l'id du produit affiché
     int quantite; /// afiiche la quantite du produit que le client
     bool etatIconeFavoris; /// Variable permettant de changer la couleur de l'icone et la gestion de la couleur
-    
+    String idFavorisProduit;
+
+
+    void getIdFavoris() async{
+      await  _db
+          .collection("Utilisateurs")
+          .document(widget.currentUserId)
+          .collection("Favoris")
+          .getDocuments()
+          .then((QuerySnapshot snapshot) {
+        if(snapshot.documents.isEmpty){
+          for(int i=0; i<snapshot.documents.length; i++){
+            if(snapshot.documents[i].data["image1"]== widget.produit.image1){
+              setState(() {
+                idFavorisProduit = snapshot.documents[i].documentID;
+              });
+
+            }
+          }
+        }
+      });
+    }
+
    @override
   void initState() {
      print(widget.currentUserId);
@@ -33,14 +56,15 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
         for (int i = 0; i < snapshot.documents.length; i++) {
           if (snapshot.documents[i].data["imagePrincipaleProduit"] == widget.produit.image1) {
            setState(() {
-              id_produit = snapshot.documents[i].documentID;
-              quantite = snapshot.documents[i].data["quantite"];
-              etatIconeFavoris = snapshot.documents[i].data["etatIconeFavoris"];
+             id_produit = snapshot.documents[i].documentID;
+             quantite = snapshot.documents[i].data["quantite"];
+             etatIconeFavoris = snapshot.documents[i].data["etatIconeFavoris"];
            });
             print(id_produit);
           }
         }
       });
+    getIdFavoris();
     super.initState();
   }
    
@@ -184,62 +208,24 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
               child: GestureDetector(
                   onTap: () async{
                     if(etatIconeFavoris == false){
-                      await _db
-                          .collection("Utilisateurs")
-                          .document(widget.currentUserId).collection("ProduitsFavoirsUser")
-                          .document(id_produit)
-                          .updateData({"etatIconeFavoris":etatIconeFavoris});
-                      /// FirestoreService().addFavoris(widget.produit, currentUserId);
-                      /*try {
-                                _db
-                                    .collection('Utilisateurs')
-                                    .document(currentUserId)
-                                    .collection("EtatProduit")
-                                    .document(document)
-                                    .updateData({'etat': true});
-                              } catch (e) {
-                                print(e.toString());
-                              }*/
-                      /*await _db.collection("Utilisateurs").document(currentUserId).collection("EtatProduit").getDocuments().then((QuerySnapshot snapshot){
-                                for(int i=0; i<snapshot.documents.length; i++){
-                                  if(widget.produit.image == snapshot.documents[i].data["imageProduit"]){
-                                    setState(() {
-                                     snapshot.documents[i].data["etat"] = true;
-                                    });
-                                  }
-                                }
-                              });*/
                       setState(() {
                         etatIconeFavoris = true;
+                         FirestoreService().addFavoris(widget.produit,widget.currentUserId);
+                        _db
+                            .collection("Utilisateurs")
+                            .document(widget.currentUserId).collection("ProduitsFavoirsUser")
+                            .document(id_produit)
+                            .updateData({"etatIconeFavoris":etatIconeFavoris});
                       });
                     } else {
-                      await _db
-                          .collection("Utilisateurs")
-                          .document(widget.currentUserId).collection("ProduitsFavoirsUser")
-                          .document(id_produit)
-                          .updateData({"etatIconeFavoris": etatIconeFavoris});
-                      ///FirestoreService().deleteFavoris(currentUserId, produitAJouter);
-                      /* try {
-                                _db
-                                    .collection('Utilisateurs')
-                                    .document(currentUserId)
-                                    .collection("EtatProduit")
-                                    .document(document)
-                                    .updateData({'etat': false});
-                              } catch (e) {
-                                print(e.toString());
-                              }*/
-                      /* await _db.collection("Utilisateurs").document(currentUserId).collection("EtatProduit").getDocuments().then((QuerySnapshot snapshot){
-                                for(int i=0; i<snapshot.documents.length; i++){
-                                  if(widget.produit.image == snapshot.documents[i].data["imageProduit"]){
-                                    setState(() {
-                                      snapshot.documents[i].data["etat"] = false;
-                                    });
-                                  }
-                                }
-                              });*/
                       setState(() {
                         etatIconeFavoris = false;
+                         _db
+                            .collection("Utilisateurs")
+                            .document(widget.currentUserId).collection("ProduitsFavoirsUser")
+                            .document(id_produit)
+                            .updateData({"etatIconeFavoris":etatIconeFavoris});
+                        FirestoreService().deleteFavoris(widget.currentUserId, idFavorisProduit);
                       });
                     }
                   },
@@ -342,6 +328,7 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
     if(widget.produit.numberImages==1){
       return Stack(
         children:<Widget>[
+
           Positioned(
             top: longueurPerCent(120, context),
             left: largeurPerCent(40, context),

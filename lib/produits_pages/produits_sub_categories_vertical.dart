@@ -74,7 +74,8 @@ de l'utilisateur pour la selection des images et l'ajout des favoris
              FirestoreService().addProduitFavorisUser(ProduitsFavorisUser(
                  imagePrincipaleProduit: produit.image1,
                  imageSelect: produit.image1,
-                 quantite: 1
+                 quantite: 1,
+                 etatIconeFavoris: false
              ), currentUserId);
            }
            print(snapshot.documents.isEmpty);

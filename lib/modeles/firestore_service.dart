@@ -78,6 +78,15 @@ Stream<List<Produit>> getProduit() {
 Future<void> addProduitFavorisUser(ProduitsFavorisUser produit, String document){
     return _db.collection("Utilisateurs").document(document).collection("ProduitsFavoirsUser").add(produit.toMap());
   }
+
+  Future<void> addFavoris(Produit produit, String document){
+    return _db.collection("Utilisateurs").document(document).collection("Favoris").add(produit.toMap());
+  }
+
+  Future<void> deleteFavoris(String document, String document1){
+    return _db.collection("Utilisateurs").document(document)
+        .collection("Favoris").document(document1).delete();
+  }
   /*
   Stream<List<Produit>> getProduits(String titreCategorie) {
     return _db.collection(titreCategorie).snapshots().map(
@@ -137,13 +146,8 @@ Future<void> updateUtilisateur(String document, Utilisateur utilisateur){
     );
   }
 
-  Future<void> addFavoris(Produit produit, String document){
-    return _db.collection("Utilisateurs").document(document).collection("Favoris").add(produit.toMap());
-  }
-  Future<void> deleteFavoris(String document, String document1){
-    return _db.collection("Utilisateurs").document(document)
-        .collection("Favoris").document(document1).delete();
-  }
+
+
 
 
   Future<void> updateEtatFavoris(String document, Favories favories){
