@@ -35,16 +35,19 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
           .collection("Favoris")
           .getDocuments()
           .then((QuerySnapshot snapshot) {
-        if(snapshot.documents.isEmpty){
+        if(snapshot.documents.isEmpty) {
+
+        }
           for(int i=0; i<snapshot.documents.length; i++){
             if(snapshot.documents[i].data["image1"]== widget.produit.image1){
               setState(() {
                 idFavorisProduit = snapshot.documents[i].documentID;
+                print("C'est ${idFavorisProduit}");
               });
 
             }
           }
-        }
+
       });
     }
 
@@ -209,6 +212,7 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
                   onTap: () async{
                     if(etatIconeFavoris == false){
                       setState(() {
+                        print("ajout");
                         etatIconeFavoris = true;
                          FirestoreService().addFavoris(widget.produit,widget.currentUserId);
                         _db
@@ -219,6 +223,7 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
                       });
                     } else {
                       setState(() {
+                        print("supprimer");
                         etatIconeFavoris = false;
                          _db
                             .collection("Utilisateurs")
