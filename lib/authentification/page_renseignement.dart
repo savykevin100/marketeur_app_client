@@ -5,6 +5,7 @@ import 'package:marketeur_follow_me/modeles/firestore_service.dart';
 import 'package:marketeur_follow_me/composants/calcul.dart';
 import 'package:marketeur_follow_me/modeles/hexadecimal.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
+import 'package:marketeur_follow_me/modeles/panier_classe.dart';
 import 'package:marketeur_follow_me/modeles/produits_favoris_user.dart';
 import 'package:marketeur_follow_me/modeles/utilisateurs.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -233,6 +234,9 @@ class _Renseignement1State extends State<Renseignement1> {
                                                               etatIconeFavoris: false
                                                             ),
                                                             widget.emailAdress);
+                                                    await FirestoreService().addPanier(PanierClasse(
+                                                      nombreAjout: 0,
+                                                    ), widget.emailAdress, "AjoutPanierBadge");
                                                     print(Renseignement1.infos_utilisateur_connnecte);
                                                     Navigator.push(
                                                         context,

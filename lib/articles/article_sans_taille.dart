@@ -1,11 +1,15 @@
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share_file/flutter_share_file.dart';
+import 'package:marketeur_follow_me/composants/appBar.dart';
 import 'package:marketeur_follow_me/composants/calcul.dart';
 import 'package:marketeur_follow_me/modeles/firestore_service.dart';
 import 'package:marketeur_follow_me/modeles/hexadecimal.dart';
+import 'package:marketeur_follow_me/modeles/panier_classe.dart';
 import 'package:marketeur_follow_me/modeles/produit.dart';
 import 'package:marketeur_follow_me/modeles/produits_favoris_user.dart';
+import 'package:marketeur_follow_me/navigation_pages/panier.dart';
 import 'package:marketeur_follow_me/produits_pages/produits_sub_categories_vertical.dart';
 import 'package:search_app_bar/filter.dart';
 import 'package:search_app_bar/search_app_bar.dart';
@@ -22,10 +26,12 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
     //  String imageCliquer = widget.produit.image1;
     int index = 1;
     Firestore _db = Firestore.instance;
-    String id_produit;/// Cette variable permet de contenir l'id du produit affiché
+    String id_produit;/// Cette variable permet de contenir l'id du produit affiché au niveau de produitFavorisUser
     int quantite; /// afiiche la quantite du produit que le client
     bool etatIconeFavoris; /// Variable permettant de changer la couleur de l'icone et la gestion de la couleur
     String idFavorisProduit;
+    int ajoutPanier; /// Variable contenant le nombre de produit ajouter aux favoris à chaque ajout
+
 
 
     void getIdFavoris() async{
@@ -37,9 +43,9 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
           .then((QuerySnapshot snapshot) {
         if(snapshot.documents.isEmpty) {
 
-        }
+        } else {
           for(int i=0; i<snapshot.documents.length; i++){
-            if(snapshot.documents[i].data["image1"]== widget.produit.image1){
+            if(snapshot.documents[i].data["image1"] == widget.produit.image1){
               setState(() {
                 idFavorisProduit = snapshot.documents[i].documentID;
                 print("C'est ${idFavorisProduit}");
@@ -47,52 +53,50 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
 
             }
           }
-
+        }
+      });
+    }
+    void getIdProduitFavorisUser(){
+      _db.collection("Utilisateurs").document(widget.currentUserId).collection("ProduitsFavoirsUser").
+      getDocuments().then((QuerySnapshot snapshot) {
+        for (int i = 0; i < snapshot.documents.length; i++) {
+          if (snapshot.documents[i].data["imagePrincipaleProduit"] == widget.produit.image1) {
+            setState(() {
+              id_produit = snapshot.documents[i].documentID;
+              quantite = snapshot.documents[i].data["quantite"];
+              etatIconeFavoris = snapshot.documents[i].data["etatIconeFavoris"];
+              ajoutPanier = snapshot.documents[i].data["ajoutPanier"];
+            });
+            print(id_produit);
+          }
+        }
+      });
+    }
+    void getNombreProduitPanier(){
+      _db.collection("Utilisateurs").document(widget.currentUserId).collection("Panier")
+          .document("AjoutPanierBadge").get().then((value){
+        setState(() {
+          ajoutPanier=value.data["nombreAjout"];
+          print("c'est ${ajoutPanier}");
+        });
       });
     }
 
    @override
   void initState() {
-     print(widget.currentUserId);
-    _db.collection("Utilisateurs").document(widget.currentUserId).collection("ProduitsFavoirsUser").
-    getDocuments().then((QuerySnapshot snapshot) {
-        for (int i = 0; i < snapshot.documents.length; i++) {
-          if (snapshot.documents[i].data["imagePrincipaleProduit"] == widget.produit.image1) {
-           setState(() {
-             id_produit = snapshot.documents[i].documentID;
-             quantite = snapshot.documents[i].data["quantite"];
-             etatIconeFavoris = snapshot.documents[i].data["etatIconeFavoris"];
-           });
-            print(id_produit);
-          }
-        }
-      });
-    getIdFavoris();
-    super.initState();
+      getIdProduitFavorisUser();
+      getNombreProduitPanier();
+      getIdFavoris();
+     super.initState();
   }
    
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: SearchAppBar<String>(
-        backgroundColor: HexColor("#001c36"),
-        title: Text(
-          "Article",
-          style: TextStyle(color: Colors.white, fontFamily: "MonseraBold"),
-        ),
-        searcher: null,
-        filter: Filters.startsWith,
-        iconTheme: IconThemeData(color: Colors.white),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(
-                Icons.shopping_basket,
-                color: Colors.white,
-              ),
-              onPressed: null)
-        ],
-      ),
-      body: (id_produit!=null && etatIconeFavoris!=null)?Container(
+    AppBarClasse _appBar = AppBarClasse.nb(titre: "Article", nbAjoutPanier: ajoutPanier, context: context);
+
+    return (id_produit!=null && etatIconeFavoris!=null)?Scaffold(
+      appBar: _appBar.appBarFunction(),
+      body:Container(
         child: Stack(children: <Widget>[
           Positioned(
               top: longueurPerCent(20, context),
@@ -182,20 +186,45 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
               onTap: () {
                 // FlutterShareFile.shareImage(widget.produit.image, "image");
               },
-              child: Container(
-                height: longueurPerCent(37, context),
-                width: largeurPerCent(200, context),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: HexColor("#FFC30D"),
-                ),
-                child: Center(
-                  child: Text(
-                    "AJOUTER AU PANIER",
-                    style: TextStyle(
-                        color: HexColor('#001C36'),
-                        fontFamily: "MonseraBold",
-                        fontSize: 13),
+              child: GestureDetector(
+                onTap: (){
+                    _db .collection("Utilisateurs")
+                        .document(widget.currentUserId).collection("Panier").where("image1", isEqualTo: widget.produit.image1)
+                        .getDocuments().then((QuerySnapshot snapshot){
+                       if(snapshot.documents.isEmpty){
+                        setState(() {
+                          ajoutPanier++;
+                          FirestoreService().addPanierSansId(PanierClasse(
+                              nomDuProduit: widget.produit.nomDuProduit,
+                              image1: widget.produit.image1,
+                              prix: widget.produit.prix,
+                              description: widget.produit.description,
+                              quantiteCommander: quantite
+                          ), widget.currentUserId, );
+                          _db
+                              .collection("Utilisateurs")
+                              .document(widget.currentUserId).collection("Panier")
+                              .document("AjoutPanierBadge")
+                              .updateData({"nombreAjout": ajoutPanier});
+                        });
+                       }
+                    });
+                },
+                child: Container(
+                  height: longueurPerCent(37, context),
+                  width: largeurPerCent(200, context),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: HexColor("#FFC30D"),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "AJOUTER AU PANIER",
+                      style: TextStyle(
+                          color: HexColor('#001C36'),
+                          fontFamily: "MonseraBold",
+                          fontSize: 13),
+                    ),
                   ),
                 ),
               ),
@@ -210,6 +239,7 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
               right: largeurPerCent(20, context),
               child: GestureDetector(
                   onTap: () async{
+                    getIdFavoris();
                     if(etatIconeFavoris == false){
                       setState(() {
                         print("ajout");
@@ -325,7 +355,9 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
             ),
           ),
         ]),
-      ):Center(child: CircularProgressIndicator(),)
+      )
+    ):Scaffold(
+      body:Center(child: CircularProgressIndicator(),)
     );
   }
 ///Cette fonction permet d'afficher les images secondaires en fonction de leurs nombres
@@ -349,7 +381,7 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
                     AsyncSnapshot<List<ProduitsFavorisUser>> snapshot) {
                   if (snapshot.hasError || !snapshot.hasData) {
                     return Center(
-                      child: CircularProgressIndicator(),
+                      child: null,
 
                     );
                   } else {
@@ -390,7 +422,7 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
                     AsyncSnapshot<List<ProduitsFavorisUser>> snapshot) {
                   if (snapshot.hasError || !snapshot.hasData) {
                     return Center(
-                      child: CircularProgressIndicator(),
+                      child: null,
                     );
                   } else {
                     for (int i = 0; i < snapshot.data.length; i++) {
@@ -489,7 +521,7 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
                     AsyncSnapshot<List<ProduitsFavorisUser>> snapshot) {
                   if (snapshot.hasError || !snapshot.hasData) {
                     return Center(
-                      child: CircularProgressIndicator(),
+                      child: null,
                     );
                   } else {
                     for (int i = 0; i < snapshot.data.length; i++) {

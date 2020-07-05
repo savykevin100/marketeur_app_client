@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:marketeur_follow_me/articles/article_sans_taille.dart';
 import 'package:marketeur_follow_me/authentification/page_renseignement.dart';
+import 'package:marketeur_follow_me/composants/appBar.dart';
 import 'package:marketeur_follow_me/composants/calcul.dart';
 import 'package:marketeur_follow_me/modeles/firestore_service.dart';
 import 'package:marketeur_follow_me/modeles/hexadecimal.dart';
@@ -28,6 +29,7 @@ class _Produits_sous_categories_verticalState
   Map<String, dynamic> utilisateur;
   int indice;
   String currentUserId;/// contient l'id de l'utilisateur connecté
+  int ajoutPanier;
 
 
 
@@ -60,6 +62,14 @@ class _Produits_sous_categories_verticalState
   }
 /*Fin de la fonction */
 
+  void getNombreProduitPanier(){
+    _db.collection("Utilisateurs").document(currentUserId).collection("Panier")
+        .document("AjoutPanierBadge").get().then((value){
+      setState(() {
+        ajoutPanier=value.data["nombreAjout"];
+      });
+    });
+  }
 
 /* Cette fonction permet d'ajouter un produit dans ProduitsFavorisUser(collection composant le produit personnel
 de l'utilisateur pour la selection des images et l'ajout des favoris
@@ -88,32 +98,20 @@ de l'utilisateur pour la selection des images et l'ajout des favoris
   /*Fin de la fonction*/
   void initState() {
     getCurrentUser();
+   if(currentUserId!=null){
+     getNombreProduitPanier();
+   }
     print(currentUserId);
   }
 
   @override
   Widget build(BuildContext context) {
+    AppBarClasse _appBar = AppBarClasse.nb(titre: "Article", nbAjoutPanier: ajoutPanier, context: context);
+
     return Scaffold(
         backgroundColor: HexColor("#FFFFFF"),
-        appBar: SearchAppBar<String>(
-          backgroundColor: HexColor("#001c36"),
-          title: Text(
-            "Sub_categorie_vertical",
-            style: TextStyle(color: Colors.white, fontFamily: "MonseraBold"),
-          ),
-          searcher: null,
-          filter: Filters.startsWith,
-          iconTheme: IconThemeData(color: Colors.white),
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(
-                  Icons.shopping_basket,
-                  color: Colors.white,
-                ),
-                onPressed: null)
-          ],
-        ),
-        body: (currentUserId != null)
+        appBar:_appBar.appBarFunction(),
+        body: (currentUserId != null )
             ? StreamBuilder(
                 stream: FirestoreService().getProduit(),
                 builder: (BuildContext context,

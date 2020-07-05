@@ -3,20 +3,23 @@ class ProduitsFavorisUser {
  int quantite;
  String imagePrincipaleProduit;
  bool etatIconeFavoris;
-ProduitsFavorisUser({this.imageSelect, this.quantite, this.imagePrincipaleProduit, this.etatIconeFavoris});
+ int ajoutPanier;
+ProduitsFavorisUser({this.imageSelect, this.quantite, this.imagePrincipaleProduit, this.etatIconeFavoris, this.ajoutPanier});
 
  ProduitsFavorisUser.fromMap(Map<String, dynamic> donnees, String quantite)
       : imageSelect = donnees["imageSelect"],
         quantite = donnees["quantite"],
         imagePrincipaleProduit = donnees["imagePrincipaleProduit"],
-       etatIconeFavoris = donnees["etatIconeFavoris"];
+       etatIconeFavoris = donnees["etatIconeFavoris"],
+       ajoutPanier = donnees["ajoutPanier"];
 
   Map<String, dynamic> toMap() {
     return {
       "imageSelect": imageSelect,
       "quantite": quantite,
       "imagePrincipaleProduit":imagePrincipaleProduit,
-      "etatIconeFavoris":etatIconeFavoris
+      "etatIconeFavoris":etatIconeFavoris,
+      "ajoutPanier":ajoutPanier
     };
   }
 }

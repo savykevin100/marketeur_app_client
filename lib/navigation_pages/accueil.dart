@@ -73,7 +73,6 @@ class _AccueilState extends State<Accueil> with SingleTickerProviderStateMixin{
       final user = await _auth.currentUser();
       if (user != null) {
         utilisateurConnecte = user;
-        print(utilisateurConnecte.email);
       }
     } catch (e) {
       print(e);

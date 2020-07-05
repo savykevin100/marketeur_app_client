@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:marketeur_follow_me/modeles/categories.dart';
+import 'package:marketeur_follow_me/modeles/panier_classe.dart';
 import 'package:marketeur_follow_me/modeles/produit.dart';
 import 'package:marketeur_follow_me/modeles/produits_favoris_user.dart';
 import 'package:marketeur_follow_me/modeles/utilisateurs.dart';
@@ -73,6 +74,16 @@ Stream<List<Produit>> getProduit() {
     );
   }
 
+  Stream<List<PanierClasse>> getNombreProduitPanier(String id) {
+    return _db.collection("Utilisateurs").document(id).collection("ProduitsFavoirsUser").snapshots().map(
+          (snapshot) =>
+          snapshot.documents.map(
+                (doc) => PanierClasse.fromMap(doc.data, doc.documentID),
+          ).toList(),
+    );
+  }
+
+
 
 /* Fonction qui permet d'ajouter les variables spécifiques aux utilisateurs*/
 Future<void> addProduitFavorisUser(ProduitsFavorisUser produit, String document){
@@ -87,6 +98,24 @@ Future<void> addProduitFavorisUser(ProduitsFavorisUser produit, String document)
     return _db.collection("Utilisateurs").document(document)
         .collection("Favoris").document(document1).delete();
   }
+
+  Stream<List<Produit>> getFavoris(String document) {
+    return _db.collection("Utilisateurs").document(document).collection(
+        "Favoris").snapshots().map(
+          (snapshot) => snapshot.documents.map(
+            (doc) => Produit.fromMap(doc.data, doc.documentID),
+      ).toList(),
+    );
+  }
+
+  Future<void> addPanier(PanierClasse produit, String document, String id){
+    return _db.collection("Utilisateurs").document(document).collection("Panier").document(id).setData(produit.toMap());
+  }
+
+
+  Future<void> addPanierSansId(PanierClasse produit, String document){
+    return _db.collection("Utilisateurs").document(document).collection("Panier").add(produit.toMap());
+  }
   /*
   Stream<List<Produit>> getProduits(String titreCategorie) {
     return _db.collection(titreCategorie).snapshots().map(
@@ -98,14 +127,7 @@ Future<void> addProduitFavorisUser(ProduitsFavorisUser produit, String document)
   }
 
 
-  Stream<List<Produit>> getFavoris(String document) {
-    return _db.collection("Utilisateurs").document(document).collection(
-        "Favoris").snapshots().map(
-          (snapshot) => snapshot.documents.map(
-            (doc) => Produit.fromMap(doc.data, doc.documentID),
-      ).toList(),
-    );
-  }
+
 
 
 

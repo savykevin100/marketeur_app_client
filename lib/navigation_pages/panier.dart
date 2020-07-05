@@ -8,8 +8,9 @@ class Panier extends StatefulWidget {
 class _PanierState extends State<Panier> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    return Scaffold(
+      appBar: AppBar(),
+      body: Container(),
     );
   }
 }
