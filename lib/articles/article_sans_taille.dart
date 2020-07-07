@@ -94,7 +94,7 @@ class _ArticleSansTailleState extends State<ArticleSansTaille> {
   Widget build(BuildContext context) {
     AppBarClasse _appBar = AppBarClasse.nb(titre: "Article", nbAjoutPanier: ajoutPanier, context: context);
 
-    return (id_produit!=null && etatIconeFavoris!=null)?Scaffold(
+    return (id_produit!=null && etatIconeFavoris!=null && ajoutPanier!=null)?Scaffold(
       appBar: _appBar.appBarFunction(),
       body:Container(
         child: Stack(children: <Widget>[

@@ -65,7 +65,20 @@ class AppBarClasse{
         Badge(
           badgeContent: StreamBuilder(
             stream: FirestoreService().getNombreProduitPanier(currentUserId),
-              builder: null),
+              builder: (BuildContext context,
+              AsyncSnapshot<List<PanierClasse>> snapshot) {
+               if(snapshot.hasError || !snapshot.hasData){
+                 return Text("");
+               } else {
+               for(int i=0; i<snapshot.data.length; i++) {
+                 if(snapshot.data[i].description==null){
+                   nbAjoutPanier=snapshot.data[i].nombreAjout;
+                 }
+                }
+               return Text("${nbAjoutPanier}");
+               }
+              }
+          ),
           toAnimate: true,
           position: BadgePosition.topRight(top:   0,  right: 0),
           child: IconButton(

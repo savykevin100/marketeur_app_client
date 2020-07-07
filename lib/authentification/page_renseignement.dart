@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Renseignement1 extends StatefulWidget {
   static final String id = "Renseignement";
-  static List<String> infos_utilisateur_connnecte = [];
+  static String infos_utilisateur_connnecte ;
 
   
 
@@ -47,8 +47,6 @@ class _Renseignement1State extends State<Renseignement1> {
   void initState() {
     super.initState();
     sexe = '';
-    Renseignement1.infos_utilisateur_connnecte=[];
-
     obtenir();
     ajouter(widget.emailAdress);
   }
@@ -226,8 +224,7 @@ class _Renseignement1State extends State<Renseignement1> {
                                                                   .emailAdress,
                                                             ),
                                                             widget.emailAdress);
-                                                            ajouter(nomComplet);
-                                                            ajouter(sexe);
+
                                                     await FirestoreService()
                                                         .addProduitFavorisUser(
                                                             ProduitsFavorisUser(
@@ -236,6 +233,7 @@ class _Renseignement1State extends State<Renseignement1> {
                                                             widget.emailAdress);
                                                     await FirestoreService().addPanier(PanierClasse(
                                                       nombreAjout: 0,
+                                                      description: "AjoutPanierBadge"
                                                     ), widget.emailAdress, "AjoutPanierBadge");
                                                     print(Renseignement1.infos_utilisateur_connnecte);
                                                     Navigator.push(
@@ -395,7 +393,7 @@ class _Renseignement1State extends State<Renseignement1> {
 /*Cette fonction permet d'obtenir les valeurs à conserver dans le shared_preferences */
   void obtenir() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    List<String> liste = await sharedPreferences.getStringList(key);
+    String liste = await sharedPreferences.getString(key);
     if (liste != null) {
       setState(() {
         Renseignement1.infos_utilisateur_connnecte = liste;
@@ -408,8 +406,8 @@ class _Renseignement1State extends State<Renseignement1> {
 
   void ajouter(String str) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    Renseignement1.infos_utilisateur_connnecte.add(str);
-    await sharedPreferences.setStringList(key,  Renseignement1.infos_utilisateur_connnecte);
+    Renseignement1.infos_utilisateur_connnecte=str;
+    await sharedPreferences.setString(key,  Renseignement1.infos_utilisateur_connnecte);
     obtenir();
   }
 }

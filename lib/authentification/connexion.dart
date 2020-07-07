@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:marketeur_follow_me/authentification/page_renseignement.dart';
 import 'package:marketeur_follow_me/composants/bouton.dart';
 import 'package:marketeur_follow_me/composants/calcul.dart';
 import 'package:marketeur_follow_me/modeles/hexadecimal.dart';
@@ -116,6 +117,9 @@ class _ConnexionState extends State<Connexion> {
                                           final user = await _auth.signInWithEmailAndPassword(email: emailAdresse , password: motDePasse);
                                           if(user!=null) {
                                             Navigator.pushNamed(context,Allnavigation_pages.id);
+                                            setState(() {
+                                              Renseignement1.infos_utilisateur_connnecte=emailAdresse;
+                                            });
                                           }
                                           setState(() {
                                             chargement = false;

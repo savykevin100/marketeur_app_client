@@ -75,7 +75,7 @@ Stream<List<Produit>> getProduit() {
   }
 
   Stream<List<PanierClasse>> getNombreProduitPanier(String id) {
-    return _db.collection("Utilisateurs").document(id).collection("ProduitsFavoirsUser").snapshots().map(
+    return _db.collection("Utilisateurs").document(id).collection("Panier").snapshots().map(
           (snapshot) =>
           snapshot.documents.map(
                 (doc) => PanierClasse.fromMap(doc.data, doc.documentID),

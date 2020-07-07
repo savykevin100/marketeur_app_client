@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,11 @@ import 'package:marketeur_follow_me/composants/appBar.dart';
 import 'package:marketeur_follow_me/composants/calcul.dart';
 import 'package:marketeur_follow_me/modeles/firestore_service.dart';
 import 'package:marketeur_follow_me/modeles/hexadecimal.dart';
+import 'package:marketeur_follow_me/modeles/panier_classe.dart';
 import 'package:marketeur_follow_me/modeles/produit.dart';
 import 'package:marketeur_follow_me/modeles/produits_favoris_user.dart';
 import 'package:marketeur_follow_me/modeles/utilisateurs.dart';
+import 'package:marketeur_follow_me/navigation_pages/panier.dart';
 import 'package:search_app_bar/filter.dart';
 import 'package:search_app_bar/search_app_bar.dart';
 class Produits_sous_categories_vertical extends StatefulWidget {
@@ -29,6 +32,7 @@ class _Produits_sous_categories_verticalState
   Map<String, dynamic> utilisateur;
   int indice;
   String currentUserId;/// contient l'id de l'utilisateur connecté
+  int nbAjoutPanier;
   int ajoutPanier;
 
 
@@ -62,11 +66,13 @@ class _Produits_sous_categories_verticalState
   }
 /*Fin de la fonction */
 
-  void getNombreProduitPanier(){
-    _db.collection("Utilisateurs").document(currentUserId).collection("Panier")
+  void getNombreProduitPanier() {
+    _db.collection("Utilisateurs").document(Renseignement1.infos_utilisateur_connnecte).collection("Panier")
         .document("AjoutPanierBadge").get().then((value){
       setState(() {
-        ajoutPanier=value.data["nombreAjout"];
+         ajoutPanier=value.data["nombreAjout"];
+        print(value.data["nombreAjout"]);
+         print("Ceci est le ajoutPanier ${ajoutPanier}");
       });
     });
   }
@@ -98,19 +104,69 @@ de l'utilisateur pour la selection des images et l'ajout des favoris
   /*Fin de la fonction*/
   void initState() {
     getCurrentUser();
-   if(currentUserId!=null){
-     getNombreProduitPanier();
-   }
-    print(currentUserId);
+    getNombreProduitPanier();
+    print(Renseignement1.infos_utilisateur_connnecte);
   }
-
+/// Pour la prochaine fois que je vais revenir je me suis arrêté ici, je teste la fonction function pour le panier
+  ///
+  ///
+  /// 
+  Text function() {
+    StreamBuilder(
+        stream: FirestoreService().getNombreProduitPanier(Renseignement1.infos_utilisateur_connnecte),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<PanierClasse>> snapshot) {
+          if(snapshot.hasError || !snapshot.hasData){
+            return Text("");
+          } else {
+            for(int i=0; i<snapshot.data.length; i++) {
+              if(snapshot.data[i].description=="AjoutPanierBadge"){
+                setState(() {
+                  nbAjoutPanier=snapshot.data[i].nombreAjout;
+                });
+              }
+            }
+            return Text("${nbAjoutPanier}");
+          }
+        }
+    );
+  }
   @override
   Widget build(BuildContext context) {
-    AppBarClasse _appBar = AppBarClasse.nb(titre: "Article", nbAjoutPanier: ajoutPanier, context: context);
+    AppBarClasse _appBar = AppBarClasse(titre: "Article",  context: context, currentUserId: Renseignement1.infos_utilisateur_connnecte);
 
     return Scaffold(
         backgroundColor: HexColor("#FFFFFF"),
-        appBar:_appBar.appBarFunction(),
+        appBar:SearchAppBar<String>(
+          backgroundColor: HexColor("#001c36"),
+          title: Text(
+            "Produits_sous_catégories",
+            style: TextStyle(color: Colors.white, fontFamily: "MonseraBold"),
+          ),
+          searcher: null,
+          filter: Filters.startsWith,
+          iconTheme: IconThemeData(color: Colors.white),
+          actions: <Widget>[
+            Badge(
+              badgeContent: function(),
+              toAnimate: true,
+              position: BadgePosition.topRight(top:   0,  right: 0),
+              child: IconButton(
+                  icon: Icon(
+                    Icons.shopping_basket,
+                    color: Colors.white,
+                  ),
+                  onPressed: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                Panier()));
+                  }),
+            )
+
+          ],
+        ),
         body: (currentUserId != null )
             ? StreamBuilder(
                 stream: FirestoreService().getProduit(),

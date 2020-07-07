@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(),
       debugShowCheckedModeBanner: false,
-      initialRoute: Connexion.id,
+      initialRoute: Inscription.id,
       routes: {
         FirstPage.id: (context) => FirstPage(),
         Connexion.id: (context) => Connexion(),
