@@ -1,4 +1,4 @@
-import 'package:marketeur_follow_me/navigation_pages/panier.dart';
+import 'package:marketeur_follow_me/panier.dart';
 
 class PanierClasse {
   String nomDuProduit;

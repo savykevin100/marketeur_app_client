@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:marketeur_follow_me/authentification/page_renseignement.dart';
 import 'package:marketeur_follow_me/navigation_pages/accueil.dart';
-import 'package:marketeur_follow_me/navigation_pages/panier.dart';
+import 'package:marketeur_follow_me/panier.dart';
 import 'package:marketeur_follow_me/navigation_pages/chat.dart';
 import 'package:marketeur_follow_me/navigation_pages/favoris.dart';
 import 'package:marketeur_follow_me/modeles/hexadecimal.dart';

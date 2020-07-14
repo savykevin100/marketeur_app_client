@@ -6,7 +6,7 @@ import 'package:marketeur_follow_me/modeles/hexadecimal.dart';
 import 'package:marketeur_follow_me/modeles/utilisateurs.dart';
 import 'package:marketeur_follow_me/navigation_pages/chat.dart';
 import 'package:marketeur_follow_me/navigation_pages/favoris.dart';
-import 'package:marketeur_follow_me/navigation_pages/panier.dart';
+import 'package:marketeur_follow_me/panier.dart';
 import 'package:marketeur_follow_me/navigation_pages/premiere_page.dart';
 import 'package:marketeur_follow_me/pages/choixConnexionInscription.dart';
 

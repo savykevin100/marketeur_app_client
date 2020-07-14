@@ -9,11 +9,6 @@ import 'package:marketeur_follow_me/modeles/hexadecimal.dart';
 import 'package:marketeur_follow_me/modeles/panier_classe.dart';
 import 'package:marketeur_follow_me/modeles/produit.dart';
 import 'package:marketeur_follow_me/modeles/produits_favoris_user.dart';
-import 'package:marketeur_follow_me/navigation_pages/panier.dart';
-import 'package:marketeur_follow_me/produits_pages/produits_sub_categories_vertical.dart';
-import 'package:search_app_bar/filter.dart';
-import 'package:search_app_bar/search_app_bar.dart';
-
 class ArticleSansTaille extends StatefulWidget {
   Produit produit;
   String currentUserId;
