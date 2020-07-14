@@ -13,7 +13,8 @@ import 'package:marketeur_follow_me/modeles/panier_classe.dart';
 import 'package:marketeur_follow_me/modeles/produit.dart';
 import 'package:marketeur_follow_me/modeles/produits_favoris_user.dart';
 import 'package:marketeur_follow_me/modeles/utilisateurs.dart';
-import 'package:marketeur_follow_me/navigation_pages/panier.dart';
+import 'package:marketeur_follow_me/panier.dart';
+import 'package:marketeur_follow_me/panier.dart';
 import 'package:search_app_bar/filter.dart';
 import 'package:search_app_bar/search_app_bar.dart';
 class Produits_sous_categories_vertical extends StatefulWidget {

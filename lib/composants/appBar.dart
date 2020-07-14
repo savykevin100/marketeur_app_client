@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:marketeur_follow_me/modeles/firestore_service.dart';
 import 'package:marketeur_follow_me/modeles/hexadecimal.dart';
 import 'package:marketeur_follow_me/modeles/panier_classe.dart';
-import 'package:marketeur_follow_me/navigation_pages/panier.dart';
+import 'package:marketeur_follow_me/panier.dart';
 import 'package:search_app_bar/filter.dart';
 import 'package:search_app_bar/search_app_bar.dart';
 

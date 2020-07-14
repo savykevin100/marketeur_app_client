@@ -176,7 +176,7 @@ class _Renseignement1State extends State<Renseignement1> {
                                                 },
                                                 validator: (value) {
                                                   if (value == null) {
-                                                    return ("Veuil  lez selectionner un sexe");
+                                                    return ("Veuillez selectionner un sexe");
                                                   }
                                                   return null;
                                                 },
